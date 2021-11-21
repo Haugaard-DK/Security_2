@@ -25,7 +25,7 @@ before_script:
   - sudo mysql -u dev -pax2 -e "CREATE DATABASE Eksamen_test;"
 
 script:
-  - cd ./application
+  - cd ./Security-Backend
   - mvn test
 
 deploy:
