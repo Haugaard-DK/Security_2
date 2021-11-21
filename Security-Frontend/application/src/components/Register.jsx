@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import facade from "../facade";
 import { Col, Row } from "react-bootstrap";
 
-export default function Register({ setLoggedIn }) {
+export default function Register({ setLoggedIn, recaptchaRef }) {
   const history = useHistory();
   const init = {
     username: "",
@@ -28,19 +28,29 @@ export default function Register({ setLoggedIn }) {
         setError("The passwords are not the same.");
         return;
       }
+      recaptchaRef.current
+        .executeAsync()
+        .then((recaptcha) => {
+          facade
+            .register(
+              userCredentials.username,
+              userCredentials.password,
+              recaptcha
+            )
+            .then(() => {
+              setLoggedIn(true);
+              history.push("/MatChat/");
+            })
+            .catch((err) => {
+              if (err.status) {
+                err.fullError.then((e) => setError(e.message));
+              }
 
-      facade
-        .register(userCredentials.username, userCredentials.password)
-        .then(() => {
-          setLoggedIn(true);
-          history.push("/MatChat/");
+              setError("An error occurred while processing your request.");
+            });
         })
-        .catch((err) => {
-          if (err.status) {
-            err.fullError.then((e) => setError(e.message));
-          }
-
-          setError("An error occurred while processing your request.");
+        .then(() => {
+          recaptchaRef.current.reset();
         });
     } else {
       setError(

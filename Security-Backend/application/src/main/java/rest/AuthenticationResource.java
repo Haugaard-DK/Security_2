@@ -30,26 +30,36 @@ import errorhandling.exceptions.UserCreationException;
 import java.text.ParseException;
 import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Context;
 import security.SharedSecret;
 import utils.EMF_Creator;
+import utils.GoogleRecaptcha;
 
 @Path("auth")
 public class AuthenticationResource {
 
-    public static final long TOKEN_EXPIRE_TIME = TimeUnit.MILLISECONDS.convert(30, TimeUnit.MINUTES); // 30 min
+    public static final long TOKEN_EXPIRE_TIME = TimeUnit.MILLISECONDS.convert(30, TimeUnit.MINUTES);
     private static final EntityManagerFactory EMF = EMF_Creator.createEntityManagerFactory();
     public static final UserFacade USER_FACADE = UserFacade.getUserFacade(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    @Context
+    ContainerRequestContext requestContext;
 
     @POST
     @Path("login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(String jsonString) throws AuthenticationException, API_Exception {
+    public Response login(String jsonString) throws AuthenticationException, API_Exception, Exception {
         String username, password;
         JsonObject jsonObject = new JsonObject();
 
-        // Extracts login credentials
+        try {
+            GoogleRecaptcha.verify(requestContext);
+        } catch (Exception e) {
+            throw e;
+        }
+
         try {
             JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
             username = json.get("userName").getAsString();
@@ -58,7 +68,6 @@ public class AuthenticationResource {
             throw new API_Exception("Malformed JSON Suplied", 400, e);
         }
 
-        // Checking login credentials and creating token if needed
         try {
             UserDTO user = USER_FACADE.login(username, password);
             String token = createToken(user);
@@ -81,11 +90,16 @@ public class AuthenticationResource {
     @Path("register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response register(String jsonString) throws AuthenticationException, API_Exception, DatabaseException, UserCreationException {
-        String username, firstname, lastname, password;
+    public Response register(String jsonString) throws AuthenticationException, API_Exception, DatabaseException, UserCreationException, Exception {
+        String username, password;
         JsonObject jsonObject = new JsonObject();
+        
+        try {
+            GoogleRecaptcha.verify(requestContext);
+        } catch (Exception e) {
+            throw e;
+        }
 
-        // Extracts user credentials
         try {
             JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
             username = json.get("userName").getAsString();
@@ -94,7 +108,6 @@ public class AuthenticationResource {
             throw new API_Exception("Malformed JSON Suplied", 400, e);
         }
 
-        // Creating user and signing in if possible
         try {
             UserDTO user = USER_FACADE.createUser(username, password);
             String token = createToken(user);
@@ -137,12 +150,12 @@ public class AuthenticationResource {
 
         return signedJWT.serialize();
     }
-    
-    protected static String getUserFromToken(ContainerRequestContext crc) throws ParseException{
+
+    protected static String getUserFromToken(ContainerRequestContext crc) throws ParseException {
         String token = crc.getHeaderString("x-access-token");
         SignedJWT jwt = SignedJWT.parse(token);
         String username = jwt.getJWTClaimsSet().getClaim("username").toString();
-        
+
         return username;
     }
 

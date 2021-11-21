@@ -82,11 +82,7 @@ public class MessageResource {
     @RolesAllowed("User")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllMessages() throws UserNotFoundException, ParseException {
-        String stringUsername = AuthenticationResource.getUserFromToken(crc);
-        
-        User user = USER_FACADE.getUserByUsername(stringUsername);
-        
-        List<MessageDTO> messages = FACADE.getAllMessages(user);
+        List<MessageDTO> messages = FACADE.getAllMessages();
         return Response.ok(messages).build();
     }
     

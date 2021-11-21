@@ -5,8 +5,8 @@ import messageFacade from "./helperFacades/MessageFacade";
 
 function Facade() {
   /** Auth related */
-  const login = (username, password) => {
-    return authFacade.login(username, password);
+  const login = (username, password, recaptcha) => {
+    return authFacade.login(username, password, recaptcha);
   };
 
   const logout = () => {
@@ -17,7 +17,7 @@ function Facade() {
     return authFacade.isLoggedIn();
   };
 
-  const register = (username, password) => {
+  const register = (username, password, recaptcha) => {
     return authFacade.register(username, password);
   };
 
@@ -43,9 +43,9 @@ function Facade() {
     return userFacade.getAllUsers(token);
   };
 
-  const postMessage = () => {
+  const postMessage = (message) => {
     let token = tokenFacade.getToken();
-    return messageFacade.postMessage(token);
+    return messageFacade.postMessage(token, message);
   };
 
   const getAllMessages = () => {

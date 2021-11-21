@@ -71,6 +71,7 @@ public class User implements Serializable {
 
     public User() {
         this.roles = new ArrayList<>();
+        this.messages = new ArrayList<>();
     }
 
     public String getUserName() {

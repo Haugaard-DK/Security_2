@@ -10,7 +10,6 @@ import java.util.Objects;
 public class UserDTO {
 
     private String userName;
-    private String fullName;
     private List<RoleDTO> roleList = new ArrayList<>();
     private String created;
 
@@ -29,10 +28,6 @@ public class UserDTO {
         return userName;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
     public String getCreated() {
         return created;
     }
@@ -45,7 +40,6 @@ public class UserDTO {
     public int hashCode() {
         int hash = 3;
         hash = 53 * hash + Objects.hashCode(this.userName);
-        hash = 53 * hash + Objects.hashCode(this.fullName);
         hash = 53 * hash + Objects.hashCode(this.roleList);
         hash = 53 * hash + Objects.hashCode(this.created);
         return hash;
@@ -64,9 +58,6 @@ public class UserDTO {
         }
         final UserDTO other = (UserDTO) obj;
         if (!Objects.equals(this.userName, other.userName)) {
-            return false;
-        }
-        if (!Objects.equals(this.fullName, other.fullName)) {
             return false;
         }
         if (!Objects.equals(this.roleList, other.roleList)) {

@@ -2,13 +2,13 @@ import tokenFacade from "./TokenFacade";
 import apiFacade from "./ApiFacade";
 
 function AuthFacade() {
-  const login = (username, password) => {
+  const login = (username, password, recaptcha) => {
     const body = {
       userName: username,
       password: password,
     };
 
-    const request = apiFacade.prepareRequest("POST", body);
+    const request = apiFacade.prepareRequest("POST", body, recaptcha);
 
     return apiFacade.submitRequest("/auth/login", request).then((data) => {
       tokenFacade.setToken(data.token);
@@ -24,13 +24,13 @@ function AuthFacade() {
     return status;
   };
 
-  const register = (username, password) => {
+  const register = (username, password, recaptcha) => {
     const body = {
       userName: username,
       password: password,
     };
 
-    const request = apiFacade.prepareRequest("POST", body);
+    const request = apiFacade.prepareRequest("POST", body, recaptcha);
 
     return apiFacade.submitRequest("/auth/register", request).then((data) => {
       tokenFacade.setToken(data.token);

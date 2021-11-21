@@ -8,20 +8,17 @@ export default function Chatting() {
   const [error, setError] = useState(null);
   const [getMessages, setMessages] = useState("Loading..");
 
-  useEffect(() => {
+  const loadChat = () => {
     facade
       .getAllMessages()
       .then((messages) => {
         setMessages(
           messages.map((message) => {
             return (
-              <ul key={"chat_"}>
-                <li key={"message_" + message.messageText}></li>
-                <li key={"username_" + message.user_id}>
-                  Username: {message.user_id}
-                </li>
-                <li key={"created_" + message.message_id}>
-                  Joined at: {message.created}
+              <ul key={"chat_" + message.message_id}>
+                <li key={"message_" + message.message_id}>
+                  {message.messageText} {message.user.userName}{" "}
+                  {message.created}
                 </li>
               </ul>
             );
@@ -35,6 +32,10 @@ export default function Chatting() {
 
         setError("An error occurred while processing your request.");
       });
+  };
+
+  useEffect(() => {
+    loadChat();
   }, []);
 
   const postMessage = (event) => {
@@ -42,11 +43,12 @@ export default function Chatting() {
 
     setError(null);
 
-    if (messageMessage.messageText != "") {
+    console.log(messageMessage);
+    if (messageMessage.messageText !== "") {
       facade
-        .postMessage()
+        .postMessage(messageMessage.messageText)
         .then(() => {
-          setMessage(messageMessage.messageText(event));
+          loadChat();
         })
         .catch((err) => {
           if (err.status) {
@@ -61,11 +63,12 @@ export default function Chatting() {
   };
 
   const onChange = (event) => {
-    setMessage(event.target.value);
+    setMessage({ ...messageMessage, messageText: event.target.value });
   };
 
   return (
     <>
+      <ul>{getMessages}</ul>
       <h2>Post Message</h2>
       <Form onChange={onChange}>
         <Form.Group>

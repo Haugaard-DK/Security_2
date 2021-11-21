@@ -1,8 +1,12 @@
 import apiFacade from "./ApiFacade";
 
 function MessageFacade() {
-  const postMessage = (token) => {
-    const request = apiFacade.prepareRequest("POST", null, token);
+  const postMessage = (token, message) => {
+    const body = {
+      messageText: message,
+    };
+    const request = apiFacade.prepareRequest("POST", body, token);
+    console.log(message);
     return apiFacade.submitRequest("/message/postMessage", request);
   };
 

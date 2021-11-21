@@ -9,6 +9,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import utils.Sanitizer;
 
 
 public class MessageFacade {
@@ -33,7 +34,9 @@ public class MessageFacade {
         return emf.createEntityManager();
     }
     
-    public MessageDTO createMessage(String messageText, User user) throws DatabaseException {
+    public MessageDTO createMessage(String messageText, User user) throws DatabaseException, Exception {
+        messageText = Sanitizer.message(messageText);
+        
         EntityManager em = getEntityManager();
         
         Message message = new Message(messageText, user); 
@@ -44,7 +47,7 @@ public class MessageFacade {
             em.persist(message);
             em.getTransaction().commit();
 
-            return new MessageDTO(message, user);
+            return new MessageDTO(message);
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -57,7 +60,7 @@ public class MessageFacade {
         
     }
 
-    public List<MessageDTO> getAllMessages(User user) {
+    public List<MessageDTO> getAllMessages() {
         EntityManager em = getEntityManager();
 
         List<Message> messages;
@@ -68,12 +71,15 @@ public class MessageFacade {
             messages = query.getResultList();
 
             messages.forEach(message -> {
-                messageDTOs.add(new MessageDTO(message, user));
+                messageDTOs.add(new MessageDTO(message));
             });
 
             return messageDTOs;
-        } finally {
+        }
+       
+         finally {
             em.close();
-        }    }
+        }
+    }
 
 }

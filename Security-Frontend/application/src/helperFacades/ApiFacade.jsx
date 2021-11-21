@@ -12,7 +12,7 @@ function ApiFacade() {
     return res.json();
   }
 
-  const prepareRequest = (method, body, token) => {
+  const prepareRequest = (method, body, token, recaptcha) => {
     const request = {
       method: method,
       headers: {
@@ -23,6 +23,10 @@ function ApiFacade() {
 
     if (token) {
       request.headers["x-access-token"] = token;
+    }
+
+    if (recaptcha) {
+      request.headers["Recaptcha"] = recaptcha;
     }
 
     if (body) {

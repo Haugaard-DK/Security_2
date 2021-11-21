@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import facade from "../facade";
 
-export default function Login({ setLoggedIn }) {
+export default function Login({ setLoggedIn, recaptchaRef }) {
   const { state } = useLocation();
   const pageAfterLogin = state ? state.from : "/MatChat/";
   const history = useHistory();
@@ -17,18 +17,29 @@ export default function Login({ setLoggedIn }) {
     setError(null);
 
     if (loginCredentials.username !== "" && loginCredentials.password !== "") {
-      facade
-        .login(loginCredentials.username, loginCredentials.password)
-        .then(() => {
-          setLoggedIn(true);
-          history.push(pageAfterLogin);
-        })
-        .catch((err) => {
-          if (err.status) {
-            err.fullError.then((e) => setError(e.message));
-          }
+      recaptchaRef.current
+        .executeAsync()
+        .then((recaptcha) => {
+          facade
+            .login(
+              loginCredentials.username,
+              loginCredentials.password,
+              recaptcha
+            )
+            .then(() => {
+              setLoggedIn(true);
+              history.push(pageAfterLogin);
+            })
+            .catch((err) => {
+              if (err.status) {
+                err.fullError.then((e) => setError(e.message));
+              }
 
-          setError("An error occurred while processing your request.");
+              setError("An error occurred while processing your request.");
+            });
+        })
+        .then(() => {
+          recaptchaRef.current.reset();
         });
     } else {
       setError("Username and/or password is missing!");

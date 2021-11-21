@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import errorhandling.exceptions.AuthenticationException;
+import utils.Sanitizer;
 
 public class UserFacade {
 
@@ -37,7 +38,10 @@ public class UserFacade {
         return emf.createEntityManager();
     }
 
-    public UserDTO createUser(String username, String password) throws DatabaseException, UserCreationException {
+    public UserDTO createUser(String username, String password) throws DatabaseException, UserCreationException, Exception {
+        username = Sanitizer.username(username);
+        password = Sanitizer.password(password);
+        
         if (username.isEmpty() || password.isEmpty()) {
             throw new UserCreationException("Not all user credentials was provided.");
         }
@@ -79,7 +83,10 @@ public class UserFacade {
         }
     }
 
-    public UserDTO login(String userName, String password) throws AuthenticationException {
+    public UserDTO login(String userName, String password) throws AuthenticationException, Exception {
+        userName = Sanitizer.username(userName);
+        password = Sanitizer.password(password);
+        
         EntityManager em = getEntityManager();
 
         try {
@@ -95,6 +102,7 @@ public class UserFacade {
         }
     }
 
+    //UserResource
     public UserDTO getUserByUserName(String username) throws UserNotFoundException {
         EntityManager em = getEntityManager();
 
@@ -111,6 +119,7 @@ public class UserFacade {
         }
     }
     
+    //MessageResource
     public User getUserByUsername(String username) throws UserNotFoundException{
         EntityManager em = getEntityManager();
 

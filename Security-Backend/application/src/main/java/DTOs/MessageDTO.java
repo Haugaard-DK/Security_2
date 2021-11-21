@@ -9,15 +9,15 @@ public class MessageDTO {
     
     private String messageText;
     private String created;
-    private User user;
+    private UserDTO user;
     
-    public MessageDTO(Message message, User user) {
+    public MessageDTO(Message message) {
         this.messageText = message.getMessageText();
         
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
         created = dateFormatter.format(message.getCreated());
         
-        this.user = message.getUser();
+        this.user = new UserDTO(message.getUser());
     }
 
     public String getMessageText() {
@@ -28,7 +28,7 @@ public class MessageDTO {
         return created;
     }
 
-    public User getUser() {
+    public UserDTO getUser() {
         return user;
     }
 

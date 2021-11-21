@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, createRef } from "react";
 import { Route, Switch } from "react-router-dom";
 import "./style/App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -14,9 +14,11 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Chatting from "./components/Chat";
 import facade from "./facade";
+import ReCAPTCHA from "react-google-recaptcha";
 
 function App() {
   const [isLoggedIn, setLoggedIn] = useState(facade.isLoggedIn());
+  const recaptchaRef = createRef();
 
   const tokenValidationCheck = useCallback(() => {
     if (isLoggedIn) {
@@ -38,6 +40,12 @@ function App() {
 
   return (
     <div>
+      <ReCAPTCHA
+        ref={recaptchaRef}
+        sitekey="6Lc4hUwdAAAAADD-cqbIXnBZEBNegMGoHrwOZZqt"
+        size="invisible"
+      />
+
       <Header
         isLoggedIn={isLoggedIn}
         setLoggedIn={setLoggedIn}
@@ -47,7 +55,7 @@ function App() {
       <Container className="mt-5">
         <Switch>
           <Route exact path="/MatChat/">
-            <Home />
+            <Home recaptchaRef={recaptchaRef} />
           </Route>
           <PrivateRoute
             path="/MatChat/info/user"
@@ -64,6 +72,7 @@ function App() {
             path="/MatChat/profile"
             isLoggedIn={isLoggedIn}
             component={Profile}
+            recaptchaRef={recaptchaRef}
           />
 
           <PrivateRoute
@@ -73,10 +82,10 @@ function App() {
           />
 
           <Route path="/MatChat/login">
-            <Login setLoggedIn={setLoggedIn} />
+            <Login setLoggedIn={setLoggedIn} recaptchaRef={recaptchaRef} />
           </Route>
           <Route path="/MatChat/register">
-            <Register setLoggedIn={setLoggedIn} />
+            <Register setLoggedIn={setLoggedIn} recaptchaRef={recaptchaRef} />
           </Route>
           <Route>
             <NoRoute />
