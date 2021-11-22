@@ -25,11 +25,11 @@ before_script:
   - sudo mysql -u dev -pax2 -e "CREATE DATABASE Eksamen_test;"
 
 script:
-  - cd ./application
+  - cd ./Security-Backend/application
   - mvn test
 
 deploy:
   provider: script
   script: mvn -Dremote.user=$REMOTE_USER -Dremote.password=$REMOTE_PW tomcat7:deploy
   on:
-    branch: master
+    branch: main
