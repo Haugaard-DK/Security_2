@@ -1,6 +1,8 @@
 package rest;
 
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.Application;
 
 @javax.ws.rs.ApplicationPath("api")
@@ -9,7 +11,11 @@ public class ApplicationConfig extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> resources = new java.util.HashSet<>();
-        addRestResourceClasses(resources);
+        try {
+            addRestResourceClasses(resources);
+        } catch (Exception ex) {
+            Logger.getLogger(ApplicationConfig.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return resources;
     }
 
@@ -18,7 +24,8 @@ public class ApplicationConfig extends Application {
      * populated with all resources defined in the project. If required, comment
      * out calling this method in getClasses().
      */
-    private void addRestResourceClasses(Set<Class<?>> resources) {
+    private void addRestResourceClasses(Set<Class<?>> resources) throws Exception {
+        try{
         resources.add(cors.CorsFilter.class);
         resources.add(errorhandling.mappers.API_ExceptionMapper.class);
         resources.add(errorhandling.mappers.AuthenticationExceptionMapper.class);
@@ -32,6 +39,12 @@ public class ApplicationConfig extends Application {
         resources.add(rest.UserResource.class);
         resources.add(security.JWTAuthenticationFilter.class);
         resources.add(security.RolesAllowedFilter.class);
+        }
+        catch(Exception e) {
+            System.out.println(e + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            throw new Exception("Du er her i app config");
+            
+        }
     }
 
 }
