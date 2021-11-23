@@ -25,7 +25,6 @@ public class ApplicationConfig extends Application {
      * out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) throws Exception {
-        try{
         resources.add(cors.CorsFilter.class);
         resources.add(errorhandling.mappers.API_ExceptionMapper.class);
         resources.add(errorhandling.mappers.AuthenticationExceptionMapper.class);
@@ -39,12 +38,7 @@ public class ApplicationConfig extends Application {
         resources.add(rest.UserResource.class);
         resources.add(security.JWTAuthenticationFilter.class);
         resources.add(security.RolesAllowedFilter.class);
-        }
-        catch(Exception e) {
-            System.out.println(e + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-            throw new Exception("Du er her i app config");
-            
-        }
+        
     }
 
 }
